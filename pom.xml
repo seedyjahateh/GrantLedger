@@ -31,7 +31,7 @@
     <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin>
     <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><configuration><excludes><exclude>**/*IT.java</exclude></excludes></configuration></plugin>
     <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-failsafe-plugin</artifactId><executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions></plugin>
-    <plugin><groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.14</version><executions>
+    <plugin><groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.15</version><executions>
       <execution><goals><goal>prepare-agent</goal></goals></execution>
       <execution><id>report</id><phase>verify</phase><goals><goal>report</goal><goal>check</goal></goals><configuration><rules>
         <rule><element>BUNDLE</element><limits><limit><counter>LINE</counter><minimum>0.80</minimum></limit><limit><counter>BRANCH</counter><minimum>0.70</minimum></limit></limits></rule>
