@@ -1,0 +1,4 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:fragment="head(title)"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title th:text="${title} + ' · GrantLedger'">GrantLedger</title><link rel="stylesheet" th:href="@{/assets/app.css}"></head><body>
+<header th:fragment="header"><a class="brand" th:href="@{/grants}">GrantLedger <span>Research administration</span></a><nav aria-label="Main"><a th:href="@{/grants}">Grants</a><form th:action="@{/logout}" method="post"><button class="secondary" type="submit">Sign out</button></form></nav></header>
+<aside class="notice" th:fragment="notice">Operational tracking ledger · The university finance system remains authoritative. Balances exclude encumbrances and sponsor allowability rules. Do not enter student, patient, payroll, or banking information.</aside>
+</body></html>

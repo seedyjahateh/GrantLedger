@@ -1,0 +1,8 @@
+.git
+.tools
+target
+node_modules
+artifacts
+test-results
+playwright-report
+.env

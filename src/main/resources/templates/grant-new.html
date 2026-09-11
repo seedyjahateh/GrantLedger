@@ -1,0 +1,10 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Create grant')}"></head><body><header th:replace="~{fragments :: header}"></header><main class="narrow"><p class="eyebrow">New research account</p><h1>Create a grant</h1><p>The grant starts as a draft. Allocate the full award before activation.</p><aside th:replace="~{fragments :: notice}"></aside>
+<p th:if="${problem}" th:text="${problem}" class="error" role="alert"></p><form class="panel form" th:action="@{/grants}" method="post" th:object="${form}">
+<label for="awardNumber">Award number</label><input id="awardNumber" th:field="*{awardNumber}" required maxlength="50"><span class="error" th:errors="*{awardNumber}"></span>
+<label for="departmentId">Department</label><select id="departmentId" th:field="*{departmentId}" required><option value="">Select department</option><option th:each="department : ${departments}" th:if="${department.active}" th:value="${department.id}" th:text="${department.name}"></option></select><span class="error" th:errors="*{departmentId}"></span>
+<label for="title">Title</label><input id="title" th:field="*{title}" required maxlength="200"><span class="error" th:errors="*{title}"></span>
+<label for="sponsorName">Sponsor</label><input id="sponsorName" th:field="*{sponsorName}" required maxlength="200"><span class="error" th:errors="*{sponsorName}"></span>
+<label for="startDate">Start date</label><input id="startDate" th:field="*{startDate}" type="date" required><span class="error" th:errors="*{startDate}"></span>
+<label for="endDate">End date</label><input id="endDate" th:field="*{endDate}" type="date" required><span class="error" th:errors="*{endDate}"></span>
+<label for="awardAmount">Award amount (USD)</label><input id="awardAmount" th:field="*{awardAmount}" inputmode="decimal" placeholder="10000.00" pattern="(0|[1-9][0-9]{0,8})\.[0-9]{2}" required><span class="error" th:errors="*{awardAmount}"></span>
+<button type="submit">Create draft grant</button></form></main></body></html>

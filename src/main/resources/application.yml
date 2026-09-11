@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: grantledger
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/grantledger}
+    username: ${DATABASE_USER:grantledger_app}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 5000
+      connection-init-sql: "SET statement_timeout = '5s'"
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: ${RUN_MIGRATIONS:false}
+    user: ${MIGRATION_USER:${DATABASE_USER:grantledger_app}}
+    password: ${MIGRATION_PASSWORD:${DATABASE_PASSWORD}}
+  session:
+    store-type: jdbc
+    timeout: 10m
+    jdbc:
+      initialize-schema: never
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER:http://localhost:8180/realms/grantledger}
+          jwk-set-uri: ${OIDC_JWK_URI:http://localhost:8180/realms/grantledger/protocol/openid-connect/certs}
+      client:
+        registration:
+          institution:
+            client-id: ${OIDC_CLIENT_ID:grantledger-web}
+            client-secret: ${OIDC_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          institution:
+            issuer-uri: ${OIDC_ISSUER:http://localhost:8180/realms/grantledger}
+            authorization-uri: ${OIDC_AUTH_URI:http://localhost:8180/realms/grantledger/protocol/openid-connect/auth}
+            token-uri: ${OIDC_TOKEN_URI:http://localhost:8180/realms/grantledger/protocol/openid-connect/token}
+            jwk-set-uri: ${OIDC_JWK_URI:http://localhost:8180/realms/grantledger/protocol/openid-connect/certs}
+            user-info-uri: ${OIDC_USERINFO_URI:http://localhost:8180/realms/grantledger/protocol/openid-connect/userinfo}
+            user-name-attribute: sub
+server:
+  tomcat:
+    max-http-form-post-size: 64KB
+  shutdown: graceful
+  max-http-request-header-size: 16KB
+  servlet:
+    session:
+      cookie:
+        secure: ${COOKIE_SECURE:true}
+        http-only: true
+        same-site: lax
+spring.lifecycle.timeout-per-shutdown-phase: 30s
+management:
+  server:
+    port: 9090
+    address: ${MANAGEMENT_ADDRESS:127.0.0.1}
+  endpoints.web.exposure.include: health,prometheus
+  endpoint.health:
+    show-details: never
+    probes.enabled: true
+    group.readiness.include: readinessState,db
+logging:
+  structured.format.console: logstash
+springdoc:
+  api-docs.version: OPENAPI_3_0
+  swagger-ui:
+    supported-submit-methods: []
+grantledger:
+  audience: ${OIDC_AUDIENCE:grantledger-api}
+  timezone: ${INSTITUTION_TIMEZONE:America/New_York}
+  roles-claim: ${OIDC_ROLES_CLAIM:roles}
+  departments-claim: ${OIDC_DEPARTMENTS_CLAIM:department_ids}

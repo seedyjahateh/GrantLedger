@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: grantledger
+      POSTGRES_USER: grantledger_owner
+      POSTGRES_PASSWORD: local-owner-only
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./ops/local/00-role.sql:/docker-entrypoint-initdb.d/00-role.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U grantledger_owner -d grantledger"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  migrate:
+    image: redgate/flyway:11.8.2-alpine
+    command: ["-url=jdbc:postgresql://db:5432/grantledger", "-user=grantledger_owner", "migrate"]
+    environment:
+      FLYWAY_PASSWORD: local-owner-only
+    volumes: ["./src/main/resources/db/migration:/flyway/sql:ro"]
+    depends_on:
+      db: {condition: service_healthy}
+  provision:
+    image: postgres:17.6-alpine
+    entrypoint: ["/bin/sh", "-ec"]
+    command: ["psql -v ON_ERROR_STOP=1 -h db -U grantledger_owner -d grantledger -f /ops/runtime-grants.sql && psql -v ON_ERROR_STOP=1 -h db -U grantledger_owner -d grantledger -f /ops/local/seed.sql"]
+    environment: {PGPASSWORD: local-owner-only}
+    volumes: ["./ops:/ops:ro"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  identity:
+    image: quay.io/keycloak/keycloak:26.3.3
+    command: [start-dev, --import-realm]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: local-admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: local-idp-only
+      KC_HOSTNAME: http://localhost:8180
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+    ports: ["127.0.0.1:8180:8080"]
+    volumes: ["./ops/local/realm.json:/opt/keycloak/data/import/realm.json:ro"]
+  app:
+    build: .
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/grantledger
+      DATABASE_USER: grantledger_app
+      DATABASE_PASSWORD: local-app-only
+      OIDC_ISSUER: http://localhost:8180/realms/grantledger
+      OIDC_JWK_URI: http://identity:8080/realms/grantledger/protocol/openid-connect/certs
+      OIDC_AUTH_URI: http://localhost:8180/realms/grantledger/protocol/openid-connect/auth
+      OIDC_TOKEN_URI: http://identity:8080/realms/grantledger/protocol/openid-connect/token
+      OIDC_USERINFO_URI: http://identity:8080/realms/grantledger/protocol/openid-connect/userinfo
+      OIDC_CLIENT_SECRET: local-web-only
+      COOKIE_SECURE: "false"
+      MANAGEMENT_ADDRESS: 0.0.0.0
+    ports: ["127.0.0.1:8080:8080", "127.0.0.1:9090:9090"]
+    read_only: true
+    tmpfs: [/tmp]
+    mem_limit: 2g
+    cpus: 2
+    depends_on:
+      provision: {condition: service_completed_successfully}
+      identity: {condition: service_started}
+volumes:
+  postgres-data:

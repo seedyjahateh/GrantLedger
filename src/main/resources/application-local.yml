@@ -1,0 +1,4 @@
+spring:
+  flyway.enabled: true
+server.servlet.session.cookie.secure: false
+springdoc.swagger-ui.supported-submit-methods: [get, post, put, patch]

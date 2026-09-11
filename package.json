@@ -1,0 +1,5 @@
+{
+  "name": "grantledger-verification", "private": true, "version": "1.0.0",
+  "scripts": {"test:browser":"playwright test", "contract:lint":"node scripts/contract-check.mjs"},
+  "devDependencies": {"@playwright/test":"1.55.0", "@apidevtools/swagger-parser":"10.1.1"}
+}

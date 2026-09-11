@@ -1,0 +1,55 @@
+import { test, expect } from '@playwright/test';
+
+test('administrator can create, allocate, post, reverse and close', async ({ page }) => {
+  await page.goto('/grants');
+  await page.getByLabel('Username or email').fill('research-admin');
+  await page.getByLabel('Password', { exact: true }).fill('local-admin-only');
+  await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+  await page.getByRole('link', { name: 'Create grant', exact: true }).click();
+  await page.getByLabel('Award number').fill(`BROWSER-${Date.now()}`);
+  await page.getByLabel('Department').selectOption('10000000-0000-0000-0000-000000000001');
+  await page.getByLabel('Title', { exact: true }).fill('Browser verification grant');
+  await page.getByLabel('Sponsor', { exact: true }).fill('Synthetic foundation');
+  await page.getByLabel('Start date').fill('2020-01-01');
+  await page.getByLabel('End date').fill('2035-12-31');
+  await page.getByLabel('Award amount (USD)').fill('100.00');
+  await page.getByRole('button', { name: 'Create draft grant' }).click();
+  await page.getByText('Edit all category allocations', { exact: true }).click();
+  await page.getByLabel('TRAVEL (USD)', { exact: true }).fill('100.00');
+  await page.getByLabel('Reason', { exact: true }).fill('Initial allocation');
+  await page.getByRole('button', { name: 'Save allocations' }).click();
+  await page.getByRole('button', { name: 'Activate grant' }).click();
+  await page.getByLabel('Category', { exact: true }).selectOption('TRAVEL');
+  await page.getByLabel('Amount (USD)', { exact: true }).fill('25.40');
+  await page.getByLabel('Expense date').fill('2025-01-01');
+  await page.getByLabel('Source transaction reference').fill('BROWSER-EXPENSE');
+  await page.getByLabel('Description — no personal information').fill('Synthetic conference expense');
+  await page.getByRole('button', { name: 'Post expense' }).click();
+  await expect(page.getByText('74.60').first()).toBeVisible();
+  const download = page.waitForEvent('download');
+  await page.getByRole('link', { name: 'Export filtered activity (CSV)' }).click();
+  expect((await download).suggestedFilename()).toMatch(/\.csv$/);
+  await page.getByRole('link', { name: 'Reverse', exact: true }).click();
+  await page.getByLabel('Reason for correction').fill('Synthetic correction');
+  await page.getByLabel('I confirm this full reversal.').check();
+  await page.getByRole('button', { name: 'Confirm reversal' }).click();
+  await expect(page.getByText('REVERSAL', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Reconcile and close grant' }).click();
+  await page.getByLabel('Reconciliation note').fill('Compared with synthetic finance records');
+  await page.getByLabel('I have reconciled this grant and confirm permanent closure.').check();
+  await page.getByRole('button', { name: 'Close grant', exact: true }).click();
+  await expect(page.getByText('CLOSED', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'View audit history' }).click();
+  await expect(page.getByRole('heading', { name: 'GRANT_CLOSED' })).toBeVisible();
+});
+
+test('viewer has read access and cannot create grants', async ({ page }) => {
+  await page.goto('/grants');
+  await page.getByLabel('Username or email').fill('viewer');
+  await page.getByLabel('Password', { exact: true }).fill('local-viewer-only');
+  await page.getByRole('button', { name: 'Sign In', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your grants' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Create grant', exact: true })).toHaveCount(0);
+  const response = await page.goto('/grants/new');
+  expect(response?.status()).toBe(403);
+});

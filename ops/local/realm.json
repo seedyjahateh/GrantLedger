@@ -1,0 +1,20 @@
+{
+  "realm": "grantledger", "enabled": true, "sslRequired": "none", "accessTokenLifespan": 300,
+  "registrationAllowed": false,
+  "clients": [{
+    "clientId": "grantledger-web", "secret": "local-web-only", "enabled": true,
+    "publicClient": false, "standardFlowEnabled": true, "directAccessGrantsEnabled": true,
+    "redirectUris": ["http://localhost:8080/login/oauth2/code/institution"],
+    "webOrigins": ["http://localhost:8080"],
+    "protocolMappers": [
+      {"name":"roles","protocol":"openid-connect","protocolMapper":"oidc-usermodel-attribute-mapper","config":{"user.attribute":"ledger_roles","claim.name":"roles","jsonType.label":"String","multivalued":"true","id.token.claim":"true","access.token.claim":"true","userinfo.token.claim":"true"}},
+      {"name":"departments","protocol":"openid-connect","protocolMapper":"oidc-usermodel-attribute-mapper","config":{"user.attribute":"department_ids","claim.name":"department_ids","jsonType.label":"String","multivalued":"true","id.token.claim":"true","access.token.claim":"true","userinfo.token.claim":"true"}},
+      {"name":"audience","protocol":"openid-connect","protocolMapper":"oidc-audience-mapper","config":{"included.custom.audience":"grantledger-api","access.token.claim":"true","id.token.claim":"false"}}
+    ]
+  }],
+  "users": [
+    {"username":"research-admin","enabled":true,"firstName":"Research","lastName":"Administrator","email":"admin@example.invalid","emailVerified":true,"credentials":[{"type":"password","value":"local-admin-only","temporary":false}],"attributes":{"ledger_roles":["RESEARCH_ADMIN"],"department_ids":["10000000-0000-0000-0000-000000000001"]}},
+    {"username":"viewer","enabled":true,"firstName":"Research","lastName":"Viewer","email":"viewer@example.invalid","emailVerified":true,"credentials":[{"type":"password","value":"local-viewer-only","temporary":false}],"attributes":{"ledger_roles":["VIEWER"],"department_ids":["10000000-0000-0000-0000-000000000001"]}},
+    {"username":"auditor","enabled":true,"firstName":"Research","lastName":"Auditor","email":"auditor@example.invalid","emailVerified":true,"credentials":[{"type":"password","value":"local-auditor-only","temporary":false}],"attributes":{"ledger_roles":["AUDITOR"],"department_ids":["10000000-0000-0000-0000-000000000001"]}}
+  ]
+}

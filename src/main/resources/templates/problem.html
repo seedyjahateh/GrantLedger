@@ -1,0 +1,1 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Unable to complete request')}"></head><body><main class="narrow"><h1>Unable to complete request</h1><p role="alert" th:text="${detail}"></p><p class="muted" th:text="'Reference: ' + ${traceId}"></p><a th:href="@{/grants}">Return to grants</a></main></body></html>
