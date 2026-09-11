@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
 
-@Component
+@Component("grantLedgerRequestContextFilter")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestContextFilter extends OncePerRequestFilter {
   private static final Logger LOG = LoggerFactory.getLogger(RequestContextFilter.class);
