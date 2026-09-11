@@ -70,4 +70,4 @@ jobs:
       - uses: github/codeql-action/init@faaca9a8f6edddba5725ffe5adefdab6669a2eca
         with: {languages: java-kotlin, build-mode: manual}
       - run: bash mvnw -B -ntp -DskipTests package
-      - uses: github/codeql-action/analyze@faaca9a8f6edddba5725ffe5adefdab6669a2eca
+      - uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938
