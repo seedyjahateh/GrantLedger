@@ -9,6 +9,7 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointR
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
@@ -114,7 +116,16 @@ public class SecurityConfig {
         .cors(cors -> cors.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+        // Only a bearer JWT authenticates the API. A browser session (OidcUser) is a credential for
+        // the HTML pages, not for /api/**; SecurityProblems answers it 401, not 403.
+        .authorizeHttpRequests(
+            authorize ->
+                authorize
+                    .anyRequest()
+                    .access(
+                        (authentication, context) ->
+                            new AuthorizationDecision(
+                                authentication.get() instanceof JwtAuthenticationToken)))
         .oauth2ResourceServer(
             oauth ->
                 oauth

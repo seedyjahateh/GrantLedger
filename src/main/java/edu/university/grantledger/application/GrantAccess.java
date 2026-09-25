@@ -31,12 +31,14 @@ public class GrantAccess {
   public GrantEntity lock(UUID id, Actor actor) {
     actor.requireAdmin();
     // Check visibility before locking an identifier supplied by the caller.
-    read(id, actor);
+    GrantEntity visible = read(id, actor);
+    // The visibility check leaves an unlocked copy in the persistence context. If a competing
+    // transaction commits while this one waits for the row lock, Hibernate finds the locked row
+    // newer than that copy and throws an optimistic-locking failure instead of returning it.
+    // Detaching the copy makes the locking query load the row fresh, under the lock.
+    entityManager.detach(visible);
     jdbc.sql("SET LOCAL lock_timeout = '2s'").update();
-    var locked = grants.lockById(id).orElseThrow(GrantAccess::notFound);
-    // The visibility check may have populated the persistence context before a competing commit.
-    entityManager.refresh(locked);
-    return locked;
+    return grants.lockById(id).orElseThrow(GrantAccess::notFound);
   }
 
   public void match(GrantEntity grant, String etag) {

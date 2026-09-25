@@ -6,7 +6,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -29,6 +32,13 @@ final class SecurityProblems implements AuthenticationEntryPoint, AccessDeniedHa
   public void handle(
       HttpServletRequest request, HttpServletResponse response, AccessDeniedException error)
       throws IOException {
+    // Denied without a bearer token (e.g. a browser session on /api/**): the caller is not
+    // authenticated for the API at all, so this is 401, not a role problem.
+    if (!(SecurityContextHolder.getContext().getAuthentication()
+        instanceof JwtAuthenticationToken)) {
+      commence(request, response, new InsufficientAuthenticationException(error.getMessage()));
+      return;
+    }
     write(request, response, 403, "FORBIDDEN", "Your role does not permit this operation.");
   }
 
