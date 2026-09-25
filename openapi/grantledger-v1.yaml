@@ -2031,7 +2031,6 @@
       "GrantPatch": {
         "type": "object",
         "additionalProperties": false,
-        "required": [],
         "properties": {
           "awardNumber": {
             "type": "string",
