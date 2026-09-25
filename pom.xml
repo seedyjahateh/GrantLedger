@@ -40,7 +40,7 @@
     </executions></plugin>
     <plugin><groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId><version>2.44.3</version><configuration><java><googleJavaFormat><version>1.25.2</version></googleJavaFormat></java></configuration></plugin>
     <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-checkstyle-plugin</artifactId><version>3.6.0</version><configuration><configLocation>config/checkstyle.xml</configLocation><consoleOutput>true</consoleOutput><failOnViolation>true</failOnViolation></configuration></plugin>
-    <plugin><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-maven-plugin</artifactId><version>4.9.8.0</version><configuration><effort>Max</effort><threshold>High</threshold></configuration></plugin>
+    <plugin><groupId>com.github.spotbugs</groupId><artifactId>spotbugs-maven-plugin</artifactId><version>4.10.4.1</version><configuration><effort>Max</effort><threshold>High</threshold></configuration></plugin>
     <plugin><groupId>org.cyclonedx</groupId><artifactId>cyclonedx-maven-plugin</artifactId><version>2.9.1</version></plugin>
   </plugins></build>
 </project>
