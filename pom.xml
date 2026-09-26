@@ -4,7 +4,7 @@
   <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.5.16</version><relativePath/></parent>
   <groupId>edu.university</groupId><artifactId>grantledger</artifactId><version>1.0.0-SNAPSHOT</version>
   <name>GrantLedger</name><description>Department-scoped research expense ledger</description>
-  <properties><java.version>21</java.version><springdoc.version>2.8.16</springdoc.version><archunit.version>1.4.1</archunit.version><postgresql.version>42.7.12</postgresql.version><tomcat.version>10.1.60</tomcat.version></properties>
+  <properties><java.version>21</java.version><springdoc.version>3.1.1</springdoc.version><archunit.version>1.4.1</archunit.version><postgresql.version>42.7.12</postgresql.version><tomcat.version>10.1.60</tomcat.version></properties>
   <dependencies>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-data-jpa</artifactId></dependency>
