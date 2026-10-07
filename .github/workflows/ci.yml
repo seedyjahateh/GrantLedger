@@ -32,7 +32,7 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.65.0 image --severity HIGH,CRITICAL --exit-code 1 grantledger:verify
       - name: Generate SBOM
         run: bash mvnw -B -ntp cyclonedx:makeAggregateBom
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
           name: verification-evidence
@@ -55,7 +55,7 @@ jobs:
           done
           exit 1
       - run: npm ci && npx playwright install --with-deps chromium && npm run test:browser
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with: {name: browser-evidence, path: "playwright-report/"}
       - if: always()

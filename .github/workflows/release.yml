@@ -28,6 +28,6 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.65.0 image --severity HIGH,CRITICAL --exit-code 1 "$IMAGE:$GITHUB_SHA"
           docker push "$IMAGE:$GITHUB_SHA"
           docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$GITHUB_SHA" > target/image-digest.txt
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with: {name: release-evidence, path: "target/bom.json\ntarget/image-digest.txt\ntarget/site/jacoco/"}
       - run: echo 'Institutional deployment is gated by docs/pilot-readiness.md. No real-data deployment is configured in this repository.'
